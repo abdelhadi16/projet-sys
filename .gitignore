@@ -19,3 +19,6 @@ events_fallback.jsonl
 .idea/
 .DS_Store
 Thumbs.db
+
+# Assignment PDF (kept locally, not in the repo)
+Device-Recognition-and-Control-Team-Guide*.pdf
