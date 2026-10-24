@@ -59,6 +59,55 @@ Open http://localhost:5173 in a browser and switch tabs in the header.
 
 ---
 
+## Standalone `.exe` + remote viewing (the realistic demo)
+
+Package the backend into a single **`kbmonitor.exe`** that runs inside the test
+VM, and watch it **live from another machine** ("the server"). Agent on one
+machine, dashboard on another — the end-to-end demo the course asks for.
+
+```
+  [ VM ]  kbmonitor.exe  --(HTTP + WebSocket, port 8000)-->  [ Server ] dashboard
+   hooks the keyboard,                                        React app in a browser
+   serves the API                                             shows everything live
+```
+
+> Use this only on **your own VM / server** for the course demo. It is a
+> visible tool (console window, unsigned, needs admin) — not hidden. Snapshot
+> the VM first, in case a BLOCK rule locks the keyboard.
+
+### 1. Build the exe
+On a Windows machine with **Python 3.11+**, double-click **`build.bat`**. It
+installs the dependencies and produces **`dist\kbmonitor.exe`** (needs no Python
+on the machine you later run it on).
+
+Manual equivalent:
+```bash
+pyinstaller --onefile --name kbmonitor --collect-all uvicorn run_server.py
+```
+
+### 2. Run it in the VM
+Copy **`dist\kbmonitor.exe`** and **`run.bat`** into the VM, then double-click
+**`run.bat`**. It asks for Administrator rights, opens the firewall for port
+8000, prints the VM's IP, and starts the agent.
+
+Manual: right-click `kbmonitor.exe` → **Run as administrator**. Change the port
+without rebuilding with `kbmonitor.exe 9000` (or set `KBMONITOR_PORT`).
+
+### 3. Watch from your server
+```bash
+cd frontend
+# PowerShell — use the IP that run.bat printed:
+$env:VITE_API_BASE = "http://192.168.1.50:8000"
+npm run dev
+```
+Open <http://localhost:5173>. The **Devices** and **Keyboard** tabs now show the
+VM live: type in the VM, see it on your server instantly; add a rule and switch
+to **Blocking** to block/remap a key in the VM from your server.
+
+Full details & troubleshooting: see **[BUILD_EXE.md](./BUILD_EXE.md)**.
+
+---
+
 ## Mini test guide (for teammates)
 
 **Where to run it:** run the **backend inside the VM** (and the frontend too, the
