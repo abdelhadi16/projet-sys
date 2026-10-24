@@ -94,6 +94,11 @@ Manual: right-click `kbmonitor.exe` → **Run as administrator**. Change the por
 without rebuilding with `kbmonitor.exe 9000` (or set `KBMONITOR_PORT`).
 
 ### 3. Watch from your server
+Double-click **`run-dashboard.bat`**. It asks for the VM IP (the one `run.bat`
+printed) and the port, installs the frontend the first time, and starts the
+dashboard.
+
+Manual equivalent:
 ```bash
 cd frontend
 # PowerShell — use the IP that run.bat printed:
