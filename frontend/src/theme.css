@@ -1,0 +1,637 @@
+/* ---------------------------------------------------------------------------
+   Dark theme, inspired by the SoundCloud-style example the user shared:
+   near-black background, light text, a single warm orange accent.
+   All colours are defined once here as CSS variables so the look is easy to
+   tweak in one place.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --bg: #121212; /* page background */
+  --bg-raised: #1c1c1c; /* cards / panels */
+  --bg-row: #202020; /* list rows */
+  --bg-row-hover: #2a2a2a;
+  --border: #333333;
+  --text: #f2f2f2; /* main text */
+  --text-dim: #9a9a9a; /* secondary text */
+  --accent: #ff5500; /* SoundCloud-style orange */
+  --accent-dim: #cc4400;
+
+  /* Status colours for the device badges. */
+  --ok: #3ecf6b;
+  --error: #ff4d4d;
+  --warn: #ffb347;
+  --info: #4d9fff;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ---- Layout ---- */
+
+.app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.header h1 .accent {
+  color: var(--accent);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+/* ---- Connection status pill ---- */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.status .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+.status.connected .dot {
+  background: var(--ok);
+}
+.status.connecting .dot {
+  background: var(--accent);
+}
+.status.disconnected .dot {
+  background: var(--error);
+}
+.status.demo .dot {
+  background: var(--info);
+}
+
+/* ---- Stats bar ---- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.stat.ok .stat-value {
+  color: var(--ok);
+}
+.stat.error .stat-value {
+  color: var(--error);
+}
+
+/* ---- Toolbar (search + filter) ---- */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.toolbar .search {
+  flex: 1;
+  min-width: 180px;
+}
+
+input[type="text"],
+select {
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.toolbar .count {
+  color: var(--text-dim);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ---- Device list ---- */
+
+.device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.device {
+  background: var(--bg-row);
+  border-radius: 6px;
+  border-left: 3px solid var(--border);
+}
+
+.device.open {
+  border-left-color: var(--accent);
+}
+
+.device-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 110px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+}
+
+.device-head:hover {
+  background: var(--bg-row-hover);
+  border-radius: 6px;
+}
+
+.device-class {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device-name {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.device-name > :first-child,
+.device-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.device-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
+.chevron {
+  color: var(--text-dim);
+}
+
+/* Status badge */
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.badge.ok {
+  background: rgba(62, 207, 107, 0.15);
+  color: var(--ok);
+}
+.badge.disabled {
+  background: rgba(154, 154, 154, 0.15);
+  color: var(--text-dim);
+}
+.badge.error {
+  background: rgba(255, 77, 77, 0.15);
+  color: var(--error);
+}
+.badge.notstarted {
+  background: rgba(255, 179, 71, 0.15);
+  color: var(--warn);
+}
+.badge.unknown {
+  background: rgba(77, 159, 255, 0.15);
+  color: var(--info);
+}
+
+/* ---- Device details table ---- */
+
+.device-details {
+  padding: 4px 12px 14px;
+  overflow-x: auto;
+}
+
+.details {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.details th {
+  text-align: left;
+  vertical-align: top;
+  color: var(--text-dim);
+  font-weight: 600;
+  padding: 4px 12px 4px 0;
+  white-space: nowrap;
+  width: 160px;
+}
+
+.details td {
+  padding: 4px 0;
+  word-break: break-word;
+  font-family: "Cascadia Code", "Consolas", monospace;
+}
+
+.details tr:not(:last-child) th,
+.details tr:not(:last-child) td {
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---- Misc ---- */
+
+.empty {
+  color: var(--text-dim);
+  text-align: center;
+  padding: 30px 0;
+}
+
+.btn {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-row);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.btn:hover {
+  background: var(--bg-row-hover);
+}
+
+.btn.small {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.banner {
+  background: rgba(255, 85, 0, 0.12);
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ---- Tabs (in the header) ---- */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab {
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-row);
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.tab:hover {
+  background: var(--bg-row-hover);
+}
+
+.tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111;
+  font-weight: 600;
+}
+
+/* Sub-bar under the header for per-tab status / controls. */
+.subbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* ---- Two-column layout (keyboard tab) ---- */
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 820px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+/* ---- Live key-event feed ---- */
+
+.feed {
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.event-row {
+  display: grid;
+  grid-template-columns: 92px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg-row);
+  border-radius: 6px;
+  border-left: 3px solid var(--border);
+}
+
+.event-row:hover {
+  background: var(--bg-row-hover);
+}
+
+.event-row.press {
+  border-left-color: var(--accent);
+}
+
+.event-main {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-key {
+  font-weight: 600;
+  font-family: "Cascadia Code", "Consolas", monospace;
+}
+
+.event-char {
+  color: var(--accent);
+  font-family: "Cascadia Code", "Consolas", monospace;
+}
+
+.event-mods {
+  color: var(--info);
+  font-size: 11px;
+}
+
+/* Verdict badges reuse the .badge base, with per-action colours. */
+.badge.verdict-PASS {
+  background: rgba(62, 207, 107, 0.15);
+  color: var(--ok);
+}
+.badge.verdict-BLOCK {
+  background: rgba(255, 77, 77, 0.15);
+  color: var(--error);
+}
+.badge.verdict-MODIFY {
+  background: rgba(77, 159, 255, 0.15);
+  color: var(--info);
+}
+.badge.verdict-INJECT {
+  background: rgba(192, 123, 255, 0.15);
+  color: #c07bff;
+}
+
+/* ---- Mode switch ---- */
+
+.mode-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.toggle {
+  position: relative;
+  width: 46px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  background: var(--border);
+  transition: background 0.15s;
+}
+
+.toggle.on {
+  background: var(--accent);
+}
+
+.toggle .knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+
+.toggle.on .knob {
+  transform: translateX(22px);
+}
+
+/* ---- Rule editor ---- */
+
+.rule {
+  background: var(--bg-row);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.rule-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rule-title {
+  font-weight: 600;
+}
+
+.rule-body {
+  color: var(--text-dim);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.rule.disabled {
+  opacity: 0.5;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 8px 0 4px;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 7px 9px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  color: var(--text);
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111;
+  font-weight: 600;
+}
+
+.btn.primary:hover {
+  background: var(--accent-dim);
+}
+
+.btn.danger {
+  color: var(--error);
+}

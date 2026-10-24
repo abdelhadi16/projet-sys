@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Node / frontend
+node_modules/
+dist/
+*.local
+
+# Captured keystroke test output (can contain typed data — keep it out of git)
+events_fallback.jsonl
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
