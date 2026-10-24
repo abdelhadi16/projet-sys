@@ -17,32 +17,50 @@ VM's devices and keystrokes live over the network.
 
 ## 1. Build the exe (inside the VM, or any Windows box with Python)
 
+**Easiest — one click:** double-click **`build.bat`**. It installs what it needs
+and produces `dist\kbmonitor.exe`. (First build takes a minute or two.)
+
+**Or by hand:**
+
 ```bash
 pip install pyinstaller fastapi uvicorn pydantic
-
 pyinstaller --onefile --name kbmonitor --collect-all uvicorn run_server.py
 ```
 
 - `--onefile` → a single `dist/kbmonitor.exe`.
 - `--collect-all uvicorn` → bundles uvicorn's submodules (it loads some
-  dynamically, so PyInstaller misses them without this). If you still get a
-  `ModuleNotFoundError` at launch, add the missing one, e.g.
-  `--hidden-import=anyio` or `--collect-all fastapi`.
+  dynamically, so PyInstaller misses them without this). If launch fails with a
+  `ModuleNotFoundError`, add the missing one, e.g. `--collect-all fastapi` or
+  `--hidden-import=anyio`.
 
 The exe appears at `dist/kbmonitor.exe`. It needs no Python on the target.
 
-## 2. Run it in the VM
+## 2. Set up and run it in the VM
 
-- Copy `dist/kbmonitor.exe` into the VM.
-- **Run it as Administrator** (right-click → Run as administrator) — the keyboard
-  hook needs it. A console window opens and prints "Starting Keyboard Hook…".
-- Windows may warn that it's an unsigned exe that uses a keyboard hook — that is
-  expected for this kind of tool; allow it in your own test VM.
-- Open the VM's firewall for port 8000 so your server can reach it:
-  ```powershell
-  New-NetFirewallRule -DisplayName "kbmonitor" -Direction Inbound -Protocol TCP -LocalPort 8000 -Action Allow
-  ```
-- Find the VM's IP: `ipconfig` → note the IPv4 address (e.g. `192.168.1.50`).
+1. **Copy** `dist\kbmonitor.exe` into the VM — put it in its own folder, e.g.
+   `C:\kbmonitor\`.
+2. **Run it as Administrator** — the keyboard hook needs it. Two ways:
+   - Right-click `kbmonitor.exe` → **Run as administrator**, or
+   - make a shortcut: right-click → *Create shortcut* → shortcut **Properties →
+     Advanced… → Run as administrator** (so a double-click always elevates).
+
+   A console window opens showing `Serving dashboard API on http://0.0.0.0:8000`.
+3. **Pick a port (optional).** It defaults to **8000**. To change it without
+   rebuilding, launch with an argument or an env var:
+   ```cmd
+   kbmonitor.exe 9000
+   ```
+   ```powershell
+   $env:KBMONITOR_PORT = "9000"; .\kbmonitor.exe
+   ```
+4. **Allow it through the VM firewall** (match the port you chose):
+   ```powershell
+   New-NetFirewallRule -DisplayName "kbmonitor" -Direction Inbound -Protocol TCP -LocalPort 8000 -Action Allow
+   ```
+5. Windows may warn it's an unsigned exe that uses a keyboard hook — expected for
+   this kind of tool; allow it in your own test VM.
+6. **Find the VM's IP:** run `ipconfig` → note the IPv4 address (e.g.
+   `192.168.1.50`). Your server uses this next.
 
 ## 3. Watch from your server
 
